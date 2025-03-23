@@ -1,0 +1,165 @@
+syntax="proto3";
+
+package msg;
+option java_package="me.zhengjie.modules.red_envelope.proto";
+
+
+//消息代号
+enum MsgCode{
+  //注册用户
+  USER_REGISTER_ENTRY_CMD=0;
+  //注册用户响应
+  USER_REGISTER_REPLY_CMD=1;
+  //登录用户
+  USER_LOGIN_ENTRY_CMD=2;
+  //登录用户响应
+  USER_LOGIN_REPLY_CMD=3;
+  
+  // 发送红包
+  SEND_RED_ENVELOPE_CMD=4;
+  //发送红包响应
+  SEND_RED_ENVELOPE_REPLY_CMD=5;
+  
+  // 抢红包
+  GRAB_RED_ENVELOPE_CMD=6;
+  //抢红包响应
+  GRAB_RED_ENVELOPE_REPLY_CMD=7;
+  
+  // 红包池广播
+  RED_ENVELOPE_POOL_BROADCAST_CMD=8;
+  
+  // 查询红包
+  QUERY_RED_ENVELOPE_CMD=9;
+  //查询红包响应
+  QUERY_RED_ENVELOPE_REPLY_CMD=10;
+  // 余额更新通知
+  BALANCE_UPDATE_NOTIFY_CMD = 11;
+
+};
+
+
+
+//注册消息体
+message UserRegisterRequest{
+
+  //账号
+  string username=2;
+  //密码
+  string password=3;
+  //昵称
+  string nickName=4;
+}
+//注册消息返回体
+message  UserRegisterResponse{
+  //注册是否成功
+  bool success =1;
+  //无论成功与否都会返回信息
+  string msg =2;
+}
+
+//登录消息体
+message UserLoginRequest{
+  //账号
+  string username=1;
+  //密码
+  string password=2;
+}
+
+//登录消息返回体
+message UserLoginResponse{
+  //登录是否成功
+  bool  success =1;
+  // 金额
+  double balance =2;
+  //如果失败的消息
+  string msg=3;
+  //所在位置 0 大厅 1对局
+  int32 location = 4;
+}
+
+//修改昵称消息体
+message UserUpdateNickNameRequest{
+  //昵称
+  string nickName =1;
+}
+
+//修改昵称返回消息体
+message UserUpdateNickNameResponse{
+  bool success =1;
+  string nickName=2;
+  string msg=3;
+}
+
+// 发送红包请求
+message SendRedEnvelopeRequest {
+    double amount = 1;        // 红包总金额
+    int32 count = 2;         // 红包个数
+    int32 luckyNumber = 3;   // 幸运数字
+}
+
+// 发送红包响应
+message SendRedEnvelopeResponse {
+    bool success = 1;        // 是否成功
+    string msg = 2;         // 提示信息
+    int64 envelopeId = 3;   // 红包ID
+}
+
+// 抢红包请求
+message GrabRedEnvelopeRequest {
+    int64 envelopeId = 1;   // 红包ID
+}
+
+// 抢红包响应
+message GrabRedEnvelopeResponse {
+    bool success = 1;       // 是否成功
+    string msg = 2;        // 提示信息
+    double amount = 3;     // 抢到的金额
+    bool isLucky = 4;      // 是否是幸运红包
+}
+
+// 红包领取记录
+message GrabRecord {
+    int64 receiverId = 1;      // 领取者ID
+    string receiverName = 2;   // 领取者昵称
+    double amount = 3;         // 领取金额
+    bool isLucky = 4;         // 是否幸运红包
+    string createTime = 5;     // 领取时间
+}
+
+// 红包信息
+message RedEnvelopeInfo {
+    int64 envelopeId = 1;    // 红包ID
+    int64 senderId = 2;      // 发送者ID
+    double totalAmount = 3;   // 总金额
+    int32 count = 4;         // 总个数
+    int32 remainCount = 5;    // 剩余个数
+    int32 luckyNumber = 6;   // 幸运数字
+    repeated GrabRecord records = 7;
+}
+
+// 红包池广播消息
+message RedEnvelopePoolResponse {
+    repeated RedEnvelopeInfo envelopes = 1;  // 红包列表
+}
+
+// 查询红包
+message QueryRedEnvelopeRequest {
+    int64 userId = 1;  //发送者id
+    int64 envelopeId = 2; // 0表示查询列表，非0表示查询详情
+}
+
+// 查询红包响应
+message QueryRedEnvelopeResponse {
+    bool success = 1;
+    string msg = 2;
+    repeated RedEnvelopeInfo envelopes = 3;
+}
+
+
+// 余额更新通知
+message BalanceUpdateNotify {
+  int64 userId = 1;           // 用户ID
+  double balance = 2;         // 更新后的余额
+  string updateType = 3;      // 更新类型（例如：发红包、抢红包、系统调整等）
+  double changeAmount = 4;    // 变动金额
+}
