@@ -37,7 +37,25 @@ enum MsgCode{
 
 };
 
+// 红包玩法类型
+enum GameType {
+  // 普通红包（幸运数字玩法）
+  LUCKY_NUMBER = 0;
+  // 手气最佳继续发
+  BEST_LUCK_CONTINUE = 1;
+  // 手气最差继续发
+  WORST_LUCK_CONTINUE = 2;
+}
 
+//红包查询类型
+enum QueryType {
+  // 根据场次查询所有红包
+  BY_SESSION = 0;
+  // 根据红包ID查询详情
+  BY_ENVELOPE_ID = 1;
+  // 根据用户和场次查询
+  BY_USER_SESSION = 2;
+}
 
 //注册消息体
 message UserRegisterRequest{
@@ -75,6 +93,8 @@ message UserLoginResponse{
   string msg=3;
   //所在位置 0 大厅 1对局
   int32 location = 4;
+  //昵称
+  string nickName =5;
 }
 
 //修改昵称消息体
@@ -95,6 +115,8 @@ message SendRedEnvelopeRequest {
     double amount = 1;        // 红包总金额
     int32 count = 2;         // 红包个数
     int32 luckyNumber = 3;   // 幸运数字
+    int32 sessionId = 4;     // 场次ID，例如100场、200场等  目前 1-6 代表 100 - 600 之后可能会做成字典
+    GameType gameType = 5;   // 玩法类型
 }
 
 // 发送红包响应
@@ -130,11 +152,14 @@ message GrabRecord {
 message RedEnvelopeInfo {
     int64 envelopeId = 1;    // 红包ID
     int64 senderId = 2;      // 发送者ID
-    double totalAmount = 3;   // 总金额
-    int32 count = 4;         // 总个数
-    int32 remainCount = 5;    // 剩余个数
-    int32 luckyNumber = 6;   // 幸运数字
-    repeated GrabRecord records = 7;
+    string senderName = 3; //发送者昵称
+    double totalAmount = 4;   // 总金额
+    int32 count = 5;         // 总个数
+    int32 remainCount = 6;    // 剩余个数
+    int32 luckyNumber = 7;   // 幸运数字
+    repeated GrabRecord records = 8;
+    int32 sessionId = 9;     // 场次ID，例如100场、200场等
+    GameType gameType = 10;   // 玩法类型
 }
 
 // 红包池广播消息
@@ -144,8 +169,10 @@ message RedEnvelopePoolResponse {
 
 // 查询红包
 message QueryRedEnvelopeRequest {
-    int64 userId = 1;  //发送者id
-    int64 envelopeId = 2; // 0表示查询列表，非0表示查询详情
+    int64 userId = 1;        // 用户ID
+    int64 envelopeId = 2;    // 红包ID，用于BY_ENVELOPE_ID查询类型
+    int32 sessionId = 3;     // 场次ID，例如100场、200场等
+    QueryType queryType = 4; // 查询类型
 }
 
 // 查询红包响应
