@@ -34,7 +34,16 @@ enum MsgCode{
   QUERY_RED_ENVELOPE_REPLY_CMD=10;
   // 余额更新通知
   BALANCE_UPDATE_NOTIFY_CMD = 11;
-
+  
+  // 更新用户场景和场次
+  UPDATE_USER_SCENE_CMD = 12;
+  // 更新用户场景和场次响应
+  UPDATE_USER_SCENE_REPLY_CMD = 13;
+  
+  // 查询用户场景和场次
+  QUERY_USER_SCENE_CMD = 14;
+  // 查询用户场景和场次响应
+  QUERY_USER_SCENE_REPLY_CMD = 15;
 };
 
 // 红包玩法类型
@@ -45,6 +54,36 @@ enum GameType {
   BEST_LUCK_CONTINUE = 1;
   // 手气最差继续发
   WORST_LUCK_CONTINUE = 2;
+}
+
+// 场景类型
+enum SceneType {
+  // 大厅
+  HALL = 0;
+  // 红包乐翻天
+  FUN_RED_ENVELOPE = 1;
+  // 红包连连看
+  CONTINUOUS_RED_ENVELOPE = 2;
+  // 红包开盲盒
+  BLIND_BOX_RED_ENVELOPE = 3;
+}
+
+// 场次类型
+enum SessionType {
+  // 大厅（无场次）
+  SESSION_0 = 0;
+  // 100场
+  SESSION_100 = 100;
+  // 200场
+  SESSION_200 = 200;
+  // 300场
+  SESSION_300 = 300;
+  // 400场
+  SESSION_400 = 400;
+  // 500场
+  SESSION_500 = 500;
+  // 600场
+  SESSION_600 = 600;
 }
 
 //红包查询类型
@@ -95,6 +134,10 @@ message UserLoginResponse{
   int32 location = 4;
   //昵称
   string nickName =5;
+  // 场景类型
+  SceneType sceneType = 6;
+  // 场次类型
+  SessionType sessionType = 7;
 }
 
 //修改昵称消息体
@@ -115,8 +158,9 @@ message SendRedEnvelopeRequest {
     double amount = 1;        // 红包总金额
     int32 count = 2;         // 红包个数
     int32 luckyNumber = 3;   // 幸运数字
-    int32 sessionId = 4;     // 场次ID，例如100场、200场等  目前 1-6 代表 100 - 600 之后可能会做成字典
+    SessionType sessionType = 4;  // 场次类型
     GameType gameType = 5;   // 玩法类型
+    SceneType sceneType = 6;  // 场景类型
 }
 
 // 发送红包响应
@@ -158,8 +202,9 @@ message RedEnvelopeInfo {
     int32 remainCount = 6;    // 剩余个数
     int32 luckyNumber = 7;   // 幸运数字
     repeated GrabRecord records = 8;
-    int32 sessionId = 9;     // 场次ID，例如100场、200场等
+    SessionType sessionType = 9;  // 场次类型
     GameType gameType = 10;   // 玩法类型
+    SceneType sceneType = 11; // 场景类型
 }
 
 // 红包池广播消息
@@ -171,8 +216,9 @@ message RedEnvelopePoolResponse {
 message QueryRedEnvelopeRequest {
     int64 userId = 1;        // 用户ID
     int64 envelopeId = 2;    // 红包ID，用于BY_ENVELOPE_ID查询类型
-    int32 sessionId = 3;     // 场次ID，例如100场、200场等
-    QueryType queryType = 4; // 查询类型
+    SessionType sessionType = 3;  // 场次类型
+    QueryType queryType = 4;  // 查询类型
+    SceneType sceneType = 5;  // 场景类型
 }
 
 // 查询红包响应
@@ -189,4 +235,33 @@ message BalanceUpdateNotify {
   double balance = 2;         // 更新后的余额
   string updateType = 3;      // 更新类型（例如：发红包、抢红包、系统调整等）
   double changeAmount = 4;    // 变动金额
+}
+
+// 更新用户场景和场次请求
+message UpdateUserSceneRequest {
+  SceneType sceneType = 1;  // 场景类型
+  SessionType sessionType = 2;  // 场次类型
+}
+
+// 更新用户场景和场次响应
+message UpdateUserSceneResponse {
+  bool success = 1;         // 是否成功
+  string msg = 2;           // 提示信息
+  SceneType sceneType = 3;  // 更新后的场景类型
+  SessionType sessionType = 4;  // 更新后的场次类型
+}
+
+// 查询用户场景和场次请求
+message QueryUserSceneRequest {
+   int64 userId = 1;  // 用户ID
+}
+
+// 查询用户场景和场次响应
+message QueryUserSceneResponse {
+  bool success = 1;         // 是否成功
+  string msg = 2;           // 提示信息
+  int64 userId = 3;         // 用户ID
+  string nickName = 4;      // 用户昵称
+  SceneType sceneType = 5;  // 场景类型
+  SessionType sessionType = 6;  // 场次类型
 }
