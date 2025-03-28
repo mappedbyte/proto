@@ -44,6 +44,9 @@ enum MsgCode{
   QUERY_USER_SCENE_CMD = 14;
   // 查询用户场景和场次响应
   QUERY_USER_SCENE_REPLY_CMD = 15;
+  
+  // 红包被抢完通知
+  RED_ENVELOPE_FINISHED_NOTIFY_CMD = 16;  // 红包被抢完通知
 };
 
 // 红包玩法类型
@@ -264,4 +267,17 @@ message QueryUserSceneResponse {
   string nickName = 4;      // 用户昵称
   SceneType sceneType = 5;  // 场景类型
   SessionType sessionType = 6;  // 场次类型
+}
+
+// 红包被抢完通知
+message RedEnvelopeFinishedNotify {
+    int64 envelopeId = 1;        // 红包ID
+    string senderName = 2;        // 发送者昵称
+    double totalAmount = 3;       // 红包总金额
+    int32 count = 4;             // 红包总个数
+    bool hasLuckyWinner = 5;     // 是否有人抢到幸运红包
+    GrabRecord luckyRecord = 6;   // 幸运红包记录（如果有）
+    GrabRecord maxRecord = 7;     // 最大金额记录
+    GrabRecord minRecord = 8;     // 最小金额记录
+    repeated GrabRecord records = 9;  // 所有抢红包记录
 }
