@@ -1,6 +1,7 @@
 syntax="proto3";
 
 package msg;
+import "google/protobuf/empty.proto";
 option java_package="me.zhengjie.modules.red_envelope.proto";
 
 
@@ -204,10 +205,11 @@ message RedEnvelopeInfo {
     int32 count = 5;         // 总个数
     int32 remainCount = 6;    // 剩余个数
     int32 luckyNumber = 7;   // 幸运数字
-    repeated GrabRecord records = 8;
-    SessionType sessionType = 9;  // 场次类型
-    GameType gameType = 10;   // 玩法类型
-    SceneType sceneType = 11; // 场景类型
+    bool  expired=8; // 是否过期
+    repeated GrabRecord records = 9; // 领取记录
+    SessionType sessionType = 10;  // 场次类型
+    GameType gameType = 11;   // 玩法类型
+    SceneType sceneType = 12; // 场景类型
 }
 
 // 红包池广播消息
@@ -217,11 +219,11 @@ message RedEnvelopePoolResponse {
 
 // 查询红包
 message QueryRedEnvelopeRequest {
-    int64 userId = 1;        // 用户ID
+    int64 userId = 1;        // 用户ID 根据查询类型判断是否传递ID
     int64 envelopeId = 2;    // 红包ID，用于BY_ENVELOPE_ID查询类型
-    SessionType sessionType = 3;  // 场次类型
-    QueryType queryType = 4;  // 查询类型
-    SceneType sceneType = 5;  // 场景类型
+    SessionType sessionType = 4;  // 场次类型
+    QueryType queryType = 5;  // 查询类型
+    SceneType sceneType = 6;  // 场景类型
 }
 
 // 查询红包响应
@@ -256,7 +258,7 @@ message UpdateUserSceneResponse {
 
 // 查询用户场景和场次请求
 message QueryUserSceneRequest {
-   int64 userId = 1;  // 用户ID
+  google.protobuf.Empty empty = 1;
 }
 
 // 查询用户场景和场次响应
