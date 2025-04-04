@@ -1,54 +1,70 @@
-syntax="proto3";
+syntax = "proto3";
 
 package msg;
 import "google/protobuf/empty.proto";
-option java_package="me.zhengjie.modules.red_envelope.proto";
+option java_package = "me.zhengjie.modules.red_envelope.proto";
 
 
 //消息代号
 enum MsgCode{
   //注册用户
-  USER_REGISTER_ENTRY_CMD=0;
+  USER_REGISTER_ENTRY_CMD = 0;
   //注册用户响应
-  USER_REGISTER_REPLY_CMD=1;
+  USER_REGISTER_REPLY_CMD = 1;
   //登录用户
-  USER_LOGIN_ENTRY_CMD=2;
+  USER_LOGIN_ENTRY_CMD = 2;
   //登录用户响应
-  USER_LOGIN_REPLY_CMD=3;
-  
+  USER_LOGIN_REPLY_CMD = 3;
+
   // 发送红包
-  SEND_RED_ENVELOPE_CMD=4;
+  SEND_RED_ENVELOPE_CMD = 4;
   //发送红包响应
-  SEND_RED_ENVELOPE_REPLY_CMD=5;
-  
+  SEND_RED_ENVELOPE_REPLY_CMD = 5;
+
   // 抢红包
-  GRAB_RED_ENVELOPE_CMD=6;
+  GRAB_RED_ENVELOPE_CMD = 6;
   //抢红包响应
-  GRAB_RED_ENVELOPE_REPLY_CMD=7;
-  
+  GRAB_RED_ENVELOPE_REPLY_CMD = 7;
+
   // 红包池广播
-  RED_ENVELOPE_POOL_BROADCAST_CMD=8;
-  
+  RED_ENVELOPE_POOL_BROADCAST_CMD = 8;
+
   // 查询红包
-  QUERY_RED_ENVELOPE_CMD=9;
+  QUERY_RED_ENVELOPE_CMD = 9;
   //查询红包响应
-  QUERY_RED_ENVELOPE_REPLY_CMD=10;
+  QUERY_RED_ENVELOPE_REPLY_CMD = 10;
   // 余额更新通知
   BALANCE_UPDATE_NOTIFY_CMD = 11;
-  
+
   // 更新用户场景和场次
   UPDATE_USER_SCENE_CMD = 12;
   // 更新用户场景和场次响应
   UPDATE_USER_SCENE_REPLY_CMD = 13;
-  
+
   // 查询用户场景和场次
   QUERY_USER_SCENE_CMD = 14;
   // 查询用户场景和场次响应
   QUERY_USER_SCENE_REPLY_CMD = 15;
-  
+
   // 红包被抢完通知
   RED_ENVELOPE_FINISHED_NOTIFY_CMD = 16;  // 红包被抢完通知
+
+  // 心跳请求
+  HEARTBEAT_CMD = 17;
+  // 心跳响应
+  HEARTBEAT_REPLY_CMD = 18;
+
+  // 系统通知
+  SYSTEM_NOTIFY_CMD = 19;
 };
+
+// 登录类型
+enum LoginType {
+  // 正常登录
+  NORMAL_LOGIN = 0;
+  // 重连登录
+  RECONNECT = 1;
+}
 
 // 红包玩法类型
 enum GameType {
@@ -104,133 +120,142 @@ enum QueryType {
 message UserRegisterRequest{
 
   //账号
-  string username=2;
+  string username = 2;
   //密码
-  string password=3;
+  string password = 3;
   //昵称
-  string nickName=4;
+  string nickName = 4;
 }
 //注册消息返回体
 message  UserRegisterResponse{
   //注册是否成功
-  bool success =1;
+  bool success = 1;
   //无论成功与否都会返回信息
-  string msg =2;
+  string msg = 2;
 }
 
 //登录消息体
 message UserLoginRequest{
   //账号
-  string username=1;
+  string username = 1;
   //密码
-  string password=2;
+  string password = 2;
+  // 登录类型：正常登录或重连
+  LoginType loginType = 3;
+  // 会话ID，重连时需要提供
+  string sessionId = 4;
+  // 设备标识，用于识别设备
+  string deviceNumber = 5;
 }
 
 //登录消息返回体
 message UserLoginResponse{
   //登录是否成功
-  bool  success =1;
+  bool  success = 1;
   // 金额
-  double balance =2;
+  double balance = 2;
   //如果失败的消息
-  string msg=3;
+  string msg = 3;
   //所在位置 0 大厅 1对局
   int32 location = 4;
   //昵称
-  string nickName =5;
+  string nickName = 5;
   // 场景类型
   SceneType sceneType = 6;
   // 场次类型
   SessionType sessionType = 7;
+  // 会话ID
+  string sessionId = 8;
 }
 
 //修改昵称消息体
 message UserUpdateNickNameRequest{
   //昵称
-  string nickName =1;
+  string nickName = 1;
 }
 
 //修改昵称返回消息体
 message UserUpdateNickNameResponse{
-  bool success =1;
-  string nickName=2;
-  string msg=3;
+  bool success = 1;
+  string nickName = 2;
+  string msg = 3;
 }
 
 // 发送红包请求
 message SendRedEnvelopeRequest {
-    double amount = 1;        // 红包总金额
-    int32 count = 2;         // 红包个数
-    int32 luckyNumber = 3;   // 幸运数字
-    SessionType sessionType = 4;  // 场次类型
-    GameType gameType = 5;   // 玩法类型
-    SceneType sceneType = 6;  // 场景类型
+  double amount = 1;        // 红包总金额
+  int32 count = 2;         // 红包个数
+  int32 luckyNumber = 3;   // 幸运数字
+  SessionType sessionType = 4;  // 场次类型
+  GameType gameType = 5;   // 玩法类型
+  SceneType sceneType = 6;  // 场景类型
 }
 
 // 发送红包响应
 message SendRedEnvelopeResponse {
-    bool success = 1;        // 是否成功
-    string msg = 2;         // 提示信息
-    int64 envelopeId = 3;   // 红包ID
+  bool success = 1;        // 是否成功
+  string msg = 2;         // 提示信息
+  int64 envelopeId = 3;   // 红包ID
 }
 
 // 抢红包请求
 message GrabRedEnvelopeRequest {
-    int64 envelopeId = 1;   // 红包ID
+  int64 envelopeId = 1;   // 红包ID
 }
 
 // 抢红包响应
 message GrabRedEnvelopeResponse {
-    bool success = 1;       // 是否成功
-    string msg = 2;        // 提示信息
-    double amount = 3;     // 抢到的金额
-    bool isLucky = 4;      // 是否是幸运红包
+  bool success = 1;       // 是否成功
+  string msg = 2;        // 提示信息
+  double amount = 3;     // 抢到的金额
+  bool isLucky = 4;      // 是否是幸运红包
+  repeated GrabRecord record = 5; //红包领取记录
 }
 
 // 红包领取记录
 message GrabRecord {
-    int64 receiverId = 1;      // 领取者ID
-    string receiverName = 2;   // 领取者昵称
-    double amount = 3;         // 领取金额
-    bool isLucky = 4;         // 是否幸运红包
-    string createTime = 5;     // 领取时间
+  int64 receiverId = 1;      // 领取者ID
+  string receiverName = 2;   // 领取者昵称
+  double amount = 3;         // 领取金额
+  bool isLucky = 4;         // 是否幸运红包
+  string createTime = 5;     // 领取时间
 }
 
 // 红包信息
 message RedEnvelopeInfo {
-    int64 envelopeId = 1;    // 红包ID
-    int64 senderId = 2;      // 发送者ID
-    string senderName = 3; //发送者昵称
-    double totalAmount = 4;   // 总金额
-    int32 count = 5;         // 总个数
-    int32 remainCount = 6;    // 剩余个数
-    int32 luckyNumber = 7;   // 幸运数字
-    bool  expired=8; // 是否过期
-    repeated GrabRecord records = 9; // 领取记录
-    SessionType sessionType = 10;  // 场次类型
-    GameType gameType = 11;   // 玩法类型
-    SceneType sceneType = 12; // 场景类型
+  int64 envelopeId = 1;    // 红包ID
+  int64 senderId = 2;      // 发送者ID
+  string senderName = 3; //发送者昵称
+  double totalAmount = 4;   // 总金额
+  int32 count = 5;         // 总个数
+  int32 remainCount = 6;    // 剩余个数
+  int32 luckyNumber = 7;   // 幸运数字
+  bool  expired = 8; // 是否过期
+  repeated GrabRecord records = 9; // 领取记录
+  SessionType sessionType = 10;  // 场次类型
+  GameType gameType = 11;   // 玩法类型
+  SceneType sceneType = 12; // 场景类型
 }
 
 // 红包池广播消息
 message RedEnvelopePoolResponse {
-    repeated RedEnvelopeInfo envelopes = 1;  // 红包列表
+  repeated RedEnvelopeInfo envelopes = 1;  // 红包列表
 }
 
 // 查询红包
 message QueryRedEnvelopeRequest {
-    int64 userId = 1;        // 用户ID 根据查询类型判断是否传递ID
-    int64 envelopeId = 2;    // 红包ID，用于BY_ENVELOPE_ID查询类型
-    SessionType sessionType = 4;  // 场次类型
-    QueryType queryType = 5;  // 查询类型
-    SceneType sceneType = 6;  // 场景类型
+  int64 userId = 1;        // 用户ID 根据查询类型判断是否传递ID
+  int64 envelopeId = 2;    // 红包ID，用于BY_ENVELOPE_ID查询类型
+  SessionType sessionType = 4;  // 场次类型
+  QueryType queryType = 5;  // 查询类型
+  SceneType sceneType = 6;  // 场景类型
 }
 
 // 查询红包响应
 message QueryRedEnvelopeResponse {
-    bool success = 1;
-    string msg = 2;
-    repeated RedEnvelopeInfo envelopes = 3;
+  bool success = 1;
+  string msg = 2;
+  repeated RedEnvelopeInfo envelopes = 3;
 }
 
 
@@ -273,13 +298,75 @@ message QueryUserSceneResponse {
 
 // 红包被抢完通知
 message RedEnvelopeFinishedNotify {
-    int64 envelopeId = 1;        // 红包ID
-    string senderName = 2;        // 发送者昵称
-    double totalAmount = 3;       // 红包总金额
-    int32 count = 4;             // 红包总个数
-    bool hasLuckyWinner = 5;     // 是否有人抢到幸运红包
-    GrabRecord luckyRecord = 6;   // 幸运红包记录（如果有）
-    GrabRecord maxRecord = 7;     // 最大金额记录
-    GrabRecord minRecord = 8;     // 最小金额记录
-    repeated GrabRecord records = 9;  // 所有抢红包记录
+  int64 envelopeId = 1;        // 红包ID
+  string senderName = 2;        // 发送者昵称
+  double totalAmount = 3;       // 红包总金额
+  int32 count = 4;             // 红包总个数
+  bool hasLuckyWinner = 5;     // 是否有人抢到幸运红包
+  GrabRecord luckyRecord = 6;   // 幸运红包记录（如果有）
+  GrabRecord maxRecord = 7;     // 最大金额记录
+  GrabRecord minRecord = 8;     // 最小金额记录
+  repeated GrabRecord records = 9;  // 所有抢红包记录
+}
+
+// 心跳请求消息
+message HeartbeatRequest {
+  // 会话ID
+  string sessionId = 1;
+  // 时间戳（毫秒）
+  int64 timestamp = 2;
+}
+
+// 心跳响应消息
+message HeartbeatResponse {
+  // 会话是否有效
+  bool sessionValid = 1;
+  // 服务器时间戳（毫秒）
+  int64 timestamp = 2;
+}
+
+// 系统通知类型
+enum SystemNotifyType {
+  // 会话失效
+  SESSION_INVALID = 0;
+  // 被强制下线
+  FORCED_OFFLINE = 1;
+  // 系统维护
+  SYSTEM_MAINTENANCE = 2;
+  // 账号异常
+  ACCOUNT_EXCEPTION = 3;
+  // 网络异常
+  NETWORK_EXCEPTION = 4;
+  // 版本更新通知
+  VERSION_UPDATE = 5;
+  //普通通知
+  ORDINARY_NOTICE = 6;
+}
+
+// 系统通知动作
+enum SystemNotifyAction {
+  // 无特定动作
+  NO_ACTION = 0;
+  // 重新登录
+  RE_LOGIN = 1;
+  // 重新连接
+  RE_CONNECT = 2;
+  // 更新客户端
+  UPDATE_CLIENT = 3;
+  // 显示提示
+  SHOW_TIPS = 4;
+}
+
+// 系统通知消息
+message SystemNotify {
+  // 通知类型
+  SystemNotifyType type = 1;
+  // 推荐动作
+  SystemNotifyAction action = 2;
+  // 通知内容
+  string message = 3;
+  // 附加数据（JSON格式）
+  string data = 4;
+  // 通知级别 (0:一般信息, 1:警告, 2:错误, 3:严重错误)
+  int32 level = 5;
 }
