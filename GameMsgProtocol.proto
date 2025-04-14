@@ -56,6 +56,11 @@ enum MsgCode{
 
   // 系统通知
   SYSTEM_NOTIFY_CMD = 19;
+
+  // 用户登出
+  USER_LOGOUT_ENTRY_CMD = 20;
+  // 用户登出响应
+  USER_LOGOUT_REPLY_CMD = 21;
 };
 
 // 登录类型
@@ -136,15 +141,15 @@ message  UserRegisterResponse{
 
 //登录消息体
 message UserLoginRequest{
-  //账号
+  //账号  登录/重连需要传递
   string username = 1;
-  //密码
+  //密码 登录需要传递
   string password = 2;
   // 登录类型：正常登录或重连
   LoginType loginType = 3;
   // 会话ID，重连时需要提供
   string sessionId = 4;
-  // 设备标识，用于识别设备
+  // 设备标识，用于识别设备  登录/重连需要传递
   string deviceNumber = 5;
 }
 
@@ -369,4 +374,20 @@ message SystemNotify {
   string data = 4;
   // 通知级别 (0:一般信息, 1:警告, 2:错误, 3:严重错误)
   int32 level = 5;
+}
+
+
+
+
+//登出消息体
+message UserLogoutRequest{
+  google.protobuf.Empty empty = 1;
+}
+
+//登出消息体
+message UserLogoutResponse{
+  //是否成功
+  bool success = 1;
+  //无论成功与否都会返回信息
+  string msg = 2;
 }
