@@ -61,6 +61,12 @@ enum MsgCode{
   USER_LOGOUT_ENTRY_CMD = 20;
   // 用户登出响应
   USER_LOGOUT_REPLY_CMD = 21;
+  //用户 获取该场次能否发红包 请求
+  GAIN_PERMISSION_TO_SEND_RED_ENVELOPES_ENTRY_CMD = 22;
+  //用户 获取该场次能否发红包 响应
+  GAIN_PERMISSION_TO_SEND_RED_ENVELOPES_REPLY_CMD = 23;
+    //红包领取记录消息
+  RED_PACKET_RECORD_MESSAGE_REPLY =24;
 };
 
 // 登录类型
@@ -130,6 +136,8 @@ message UserRegisterRequest{
   string password = 3;
   //昵称
   string nickName = 4;
+  //邀请码
+  string inviteCode = 5;
 }
 //注册消息返回体
 message  UserRegisterResponse{
@@ -214,7 +222,8 @@ message GrabRedEnvelopeResponse {
   string msg = 2;        // 提示信息
   double amount = 3;     // 抢到的金额
   bool isLucky = 4;      // 是否是幸运红包
-  repeated GrabRecord record = 5; //红包领取记录
+
+  repeated GrabRecord record = 6; //红包领取记录
 }
 
 // 红包领取记录
@@ -284,6 +293,8 @@ message UpdateUserSceneResponse {
   string msg = 2;           // 提示信息
   SceneType sceneType = 3;  // 更新后的场景类型
   SessionType sessionType = 4;  // 更新后的场次类型
+  //是否正在游戏
+  bool isInGame = 5;
 }
 
 // 查询用户场景和场次请求
@@ -376,9 +387,6 @@ message SystemNotify {
   int32 level = 5;
 }
 
-
-
-
 //登出消息体
 message UserLogoutRequest{
   google.protobuf.Empty empty = 1;
@@ -386,6 +394,25 @@ message UserLogoutRequest{
 
 //登出消息体
 message UserLogoutResponse{
+  //是否成功
+  bool success = 1;
+  //无论成功与否都会返回信息
+  string msg = 2;
+}
+
+
+message RedPacketRecordMessageResponse{
+  repeated GrabRecord records = 1;
+}
+
+
+message GainPermissionToSendRedEnvelopesRequest {
+  SceneType sceneType = 1;  // 场景类型
+  SessionType sessionType = 2;  // 场次类型
+}
+
+
+message GainPermissionToSendRedEnvelopesResponse {
   //是否成功
   bool success = 1;
   //无论成功与否都会返回信息
