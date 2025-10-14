@@ -179,6 +179,10 @@ message UserLoginResponse{
   SessionType sessionType = 7;
   // 会话ID
   string sessionId = 8;
+  //用户邀请码
+  string inviteCode = 9;
+  // 累计邀请收益
+  double totalCommissionIncome = 10;
 }
 
 //修改昵称消息体
@@ -279,6 +283,7 @@ message BalanceUpdateNotify {
   double balance = 2;         // 更新后的余额
   string updateType = 3;      // 更新类型（例如：发红包、抢红包、系统调整等）
   double changeAmount = 4;    // 变动金额
+  double totalCommissionIncome=5; // 累计邀请收益
 }
 
 // 更新用户场景和场次请求
