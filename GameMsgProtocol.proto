@@ -66,8 +66,13 @@ enum MsgCode{
   //用户 获取该场次能否发红包 响应
   GAIN_PERMISSION_TO_SEND_RED_ENVELOPES_REPLY_CMD = 23;
     //红包领取记录消息
-  RED_PACKET_RECORD_MESSAGE_REPLY =24;
-};
+    RED_PACKET_RECORD_MESSAGE_REPLY =24;
+  
+    // 红包开盲盒
+    BLIND_BOX_RED_ENVELOPE_CMD = 25;
+    // 红包开盲盒响应
+    BLIND_BOX_RED_ENVELOPE_REPLY_CMD = 26;
+  };
 
 // 登录类型
 enum LoginType {
@@ -85,6 +90,16 @@ enum GameType {
   BEST_LUCK_CONTINUE = 1;
   // 手气最差继续发
   WORST_LUCK_CONTINUE = 2;
+  // 单个押注
+  SINGLE_BET = 3;
+  // 双数押注
+  DOUBLE_BET = 4;
+  // 三数押注
+  TRIPLE_BET = 5;
+  // 单双押注
+  ODD_EVEN_BET = 6;
+  // 大小押注
+  BIG_SMALL_BET = 7;
 }
 
 // 场景类型
@@ -422,4 +437,21 @@ message GainPermissionToSendRedEnvelopesResponse {
   bool success = 1;
   //无论成功与否都会返回信息
   string msg = 2;
+}
+
+// 红包开盲盒请求
+message BlindBoxRedEnvelopeRequest {
+  int64 envelopeId = 1;      // 红包ID 可以不传递 预留字段
+  GameType betType = 2;         // 押注类型
+  double betAmount = 3;      // 押注金额 可以不传递 预留字段
+  bool isWin = 4; //   目前是客户端判断是否 输赢
+}
+
+// 红包开盲盒响应
+message BlindBoxRedEnvelopeResponse {
+  bool success = 1;          // 是否成功
+  string msg = 2;            // 提示信息
+  double resultAmount = 3;   // 结果金额（赢得或失去的金额）
+  bool isWin = 4;            // 是否赢
+  double balance = 6;        // 更新后的余额
 }
